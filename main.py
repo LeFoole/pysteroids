@@ -1,3 +1,4 @@
+import sys
 import pygame
 
 from constants import *
@@ -19,7 +20,7 @@ def main():
     asteroids = pygame.sprite.Group()
     
     Player.containers = (updatable, drawable)
-    Player(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
+    player = Player(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
     
     AsteroidField.containers = (updatable)
     Asteroid.containers = (asteroids, updatable, drawable)
@@ -34,8 +35,14 @@ def main():
         screen.fill("black")
 
         updatable.update(dt)
+        
         for obj in drawable:
             obj.draw(screen)
+
+        for obj in asteroids:
+            if obj.detect_collision(player):
+                print("Game Over!")
+                sys.exit()
 
         #Refresh the screen after everything was updated
         pygame.display.flip()
