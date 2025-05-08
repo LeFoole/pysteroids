@@ -15,18 +15,10 @@ def main():
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pygame.time.Clock()
     dt = 0
-    #Groups
-    updatable = pygame.sprite.Group()
-    drawable = pygame.sprite.Group()
-    asteroids = pygame.sprite.Group()
-    shot = pygame.sprite.Group()
+
+    updatable, drawable, asteroids, shot = create_and_assign_groups()
     
-    Player.containers = (updatable, drawable)
     player = Player(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
-    Shot.containers = (shot, updatable, drawable)
-    
-    AsteroidField.containers = (updatable)
-    Asteroid.containers = (asteroids, updatable, drawable)
     AsteroidField()
 
     #Main game loop
@@ -53,6 +45,21 @@ def main():
 
         #Wait for next frame time
         dt = clock.tick(60)/1000
+
+
+def create_and_assign_groups():
+    #Groups
+    updatable = pygame.sprite.Group()
+    drawable = pygame.sprite.Group()
+    asteroids = pygame.sprite.Group()
+    shot = pygame.sprite.Group()
+    
+    Player.containers = (updatable, drawable)
+    Shot.containers = (shot, updatable, drawable)
+    AsteroidField.containers = (updatable)
+    Asteroid.containers = (asteroids, updatable, drawable)
+
+    return updatable, drawable, asteroids, shot
 
 
 if __name__ == "__main__":
