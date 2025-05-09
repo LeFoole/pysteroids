@@ -2,6 +2,7 @@ import pygame
 import random
 
 from constants import *
+from events import *
 from asteroid import Asteroid
 
 class AsteroidField(pygame.sprite.Sprite):
@@ -55,3 +56,17 @@ class AsteroidField(pygame.sprite.Sprite):
     def spawn(self, radius, position, velocity):
         asteroid = Asteroid(position.x, position.y, radius)
         asteroid.velocity = velocity
+
+    def game_start(self):
+        for asteroid in self.asteroids_group:
+            asteroid.kill()
+
+    def handle_event(self, event):
+        
+        if event.type == GAME_START_EVENT:
+            self.game_start()
+            return
+
+        if event.type == GAME_OVER_EVENT:
+            self.game_over()
+            return

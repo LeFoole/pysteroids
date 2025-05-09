@@ -1,5 +1,6 @@
 import pygame
 
+from events import *
 
 class CircleShape(pygame.sprite.Sprite):
     'Class used for collision detection between objects'
@@ -28,6 +29,16 @@ class CircleShape(pygame.sprite.Sprite):
         #sub-classes must override
         raise NotImplementedError
     
+    def handle_event(self, event):
+        
+        if event.type == GAME_START_EVENT:
+            self.game_start()
+            return
+
+        if event.type == GAME_OVER_EVENT:
+            self.game_over()
+            return
+
 
     def detect_collision(self, other):
         return pygame.Vector2.distance_to(self.position, other.position) < self.radius + other.radius

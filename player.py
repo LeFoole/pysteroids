@@ -1,6 +1,7 @@
 import pygame
 
 from constants import *
+from gamestatemanager import GameStateManager, GAME_STATE
 import circleshape
 import shot
 
@@ -12,6 +13,7 @@ class Player(circleshape.CircleShape):
 
         self.rotation = 0
         self.last_shot = 0
+
 
     def draw(self, screen):
         #Draw Player based on self.triangle() points
@@ -26,6 +28,9 @@ class Player(circleshape.CircleShape):
 
 
     def process_input(self, dt, pressed_keys):
+        if GameStateManager.GAME_STATE != GAME_STATE.PLAYING:
+            return
+        
         self.process_movement_input(dt, pressed_keys)
         self.process_action_input(dt, pressed_keys)
 
@@ -69,6 +74,16 @@ class Player(circleshape.CircleShape):
         self.gun_point = a
         return [a, b, c]
 
-    def destroy(self):
-        print("Game Over!")
+    def game_start(self):
+        self.position = pygame.Vector2(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
+        self.rotation = 0
+        for shot in self.shots_group:
+            shot.kill()
         #Visually explode the ship
+
+    def game_over(self):
+        print("Game over! Ship is exploding!!!")
+
+
+
+#TODO: send_event()? | read_event() - send to objects in event_handler group | hande_event() - on CircleShape?
