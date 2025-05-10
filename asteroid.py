@@ -17,6 +17,7 @@ class Asteroid(circleshape.CircleShape):
 
     def update(self, dt):
         self.position += self.velocity * dt
+        self.rect.center = self.position
 
         if self.is_out_of_bounds():
             self.kill()
@@ -29,7 +30,7 @@ class Asteroid(circleshape.CircleShape):
         #Subdivide if possible, kill if smallest
         if self.kind > 1:
             self.split()
-        
+        #TODO: Do particle effects
         self.kill()
 
     def split(self):

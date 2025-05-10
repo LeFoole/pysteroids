@@ -61,6 +61,10 @@ class AsteroidField(pygame.sprite.Sprite):
         for asteroid in self.asteroids_group:
             asteroid.kill()
 
+    def game_over(self):
+        #Do nothing
+        pass
+
     def handle_event(self, event):
         
         if event.type == GAME_START_EVENT:

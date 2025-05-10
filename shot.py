@@ -19,6 +19,7 @@ class Shot(circleshape.CircleShape):
 
     def update(self, dt):
         self.position += self.forward * SHOT_SPEED * dt
+        self.rect.center = self.position
 
     def destroy(self):
         self.kill()

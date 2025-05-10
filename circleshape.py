@@ -15,11 +15,13 @@ class CircleShape(pygame.sprite.Sprite):
         self.velocity = pygame.Vector2(0, 0)
         self.radius = radius
 
+        self.rect = pygame.Rect(0, 0, radius * 2, radius * 2)
+        self.rect.center = self.position
+
 
     def draw(self, screen):
         #sub-classes must override
         raise NotImplementedError
-
 
     def update(self, dt):
         #sub-classes must override
@@ -29,8 +31,8 @@ class CircleShape(pygame.sprite.Sprite):
         #sub-classes must override
         raise NotImplementedError
     
+
     def handle_event(self, event):
-        
         if event.type == GAME_START_EVENT:
             self.game_start()
             return
@@ -38,13 +40,3 @@ class CircleShape(pygame.sprite.Sprite):
         if event.type == GAME_OVER_EVENT:
             self.game_over()
             return
-
-
-    def detect_collision(self, other):
-        return pygame.Vector2.distance_to(self.position, other.position) < self.radius + other.radius
-    
-    def detect_collision_group(self, group):
-        for obj in group:
-            if self.detect_collision(obj):
-                obj.destroy()
-                self.destroy()
