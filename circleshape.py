@@ -1,11 +1,13 @@
 import pygame
 
 from events import *
+from gamestatemanager import GameManager
 
 class CircleShape(pygame.sprite.Sprite):
     'Class used for collision detection between objects'
 
     def __init__(self, x, y, radius):
+        self._layer = 1
         if hasattr(self, "containers"):
             super().__init__(self.containers)
         else:

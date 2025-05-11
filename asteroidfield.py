@@ -57,9 +57,13 @@ class AsteroidField(pygame.sprite.Sprite):
         asteroid = Asteroid(position.x, position.y, radius)
         asteroid.velocity = velocity
 
-    def game_start(self):
+    def reset_field(self):
+        self.spaw_timer = 0
         for asteroid in self.asteroids_group:
             asteroid.kill()
+    
+    def game_start(self):
+        self.reset_field()
 
     def game_over(self):
         #Do nothing

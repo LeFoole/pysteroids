@@ -4,8 +4,9 @@ import sys
 from constants import *
 from events import *
 from objectgroups import ObjectGroups
-from gamestatemanager import GameStateManager, GAME_STATE
+from gamestatemanager import GameManager, GAME_STATE
 from menu import Menu
+from gameui import GameUI
 from player import Player
 from shot import Shot
 from asteroid import Asteroid
@@ -17,12 +18,15 @@ def main():
     dt = 0
 
     #Game Variables
-    GameStateManager.update_game_state(GAME_STATE.MENU)
-
+    GameManager.update_game_state(GAME_STATE.MENU)
     groups = create_and_assign_groups()
+    GameManager.menu = Menu()
+    GameManager.ui = GameUI()
+    groups.menu_drawable.add(GameManager.menu)
+    groups.drawable.add(GameManager.ui)
+
     player = Player(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
     asteroid_field = AsteroidField()
-    menu = Menu()
 
     #Main game loop
     while True:
@@ -30,12 +34,11 @@ def main():
             
         screen.fill("black")
 
-        match GameStateManager.GAME_STATE:
+        match GameManager.GAME_STATE:
             case GAME_STATE.MENU:
                 groups.menu_updatable.update(dt)
                 for obj in groups.menu_drawable:
                     obj.draw(screen)
-                draw_menu(screen, menu)
                 wait_for_start_game_input()
 
             case GAME_STATE.PLAYING:
@@ -43,9 +46,12 @@ def main():
                 for obj in groups.drawable:
                     obj.draw(screen)
                 detect_collisions(player, groups.asteroids, groups.shots)
+                #ui.update(f"Score: {GameStateManager.GAME_SCORE}")
 
             case GAME_STATE.OVER:
-                draw_game_over(screen, menu)
+                groups.menu_updatable.update(dt)
+                for obj in groups.menu_drawable:
+                    obj.draw(screen)
                 wait_for_start_game_input()
 
         #Refresh the screen after everything was updated
@@ -68,14 +74,26 @@ def process_events(events, *event_handling_objects):
         if event.type == pygame.QUIT:
             sys.exit()
 
+        if event.type == pygame.MOUSEBUTTONDOWN and GameManager.GAME_STATE != GAME_STATE.PLAYING:
+            for button in GameManager.menu.get_buttons():
+                if button.mouse_is_over():
+                    button.handle_events(event)
+
+        if event.type == EVENT_OPEN_MENU:
+            GameManager.update_game_state(GAME_STATE.MENU)
+            continue
+
+        if event.type == SCORING_EVENT:
+            event.obj.handle_event(event)
+            continue
         
         if event.type == GAME_START_EVENT:
-            GameStateManager.update_game_state(GAME_STATE.PLAYING)
+            GameManager.update_game_state(GAME_STATE.PLAYING)
             #asteroid_field.handle_event(event)
             #player.handle_event(event)
 
         if event.type == GAME_OVER_EVENT:
-            GameStateManager.update_game_state(GAME_STATE.OVER)
+            GameManager.update_game_state(GAME_STATE.OVER)
             #player.handle_event(event)
 
         if event.type != pygame.KEYDOWN:
@@ -100,13 +118,9 @@ def detect_shots_collisions(shots, asteroids):
         shot.destroy()
         for asteroid in asteroids:
             asteroid.destroy()
+            GameManager.GAME_SCORE += asteroid.radius
+            pygame.event.post(pygame.event.Event(SCORING_EVENT, obj=GameManager.ui, text=f"Score: {GameManager.GAME_SCORE}"))
 
-
-def draw_menu(screen, menu):
-    menu.draw_start_menu(screen)
-        
-def draw_game_over(screen, menu):
-    menu.draw_game_over(screen)
 
 def wait_for_start_game_input():
     if pygame.key.get_pressed()[pygame.K_SPACE]:
@@ -116,11 +130,11 @@ def wait_for_start_game_input():
 def create_and_assign_groups():
     #Groups
     updatable = pygame.sprite.Group()
-    drawable = pygame.sprite.Group()
+    drawable = pygame.sprite.LayeredUpdates()
     asteroids = pygame.sprite.Group()
     shots = pygame.sprite.Group()
     menu_updatable = pygame.sprite.Group()
-    menu_drawable = pygame.sprite.Group()
+    menu_drawable = pygame.sprite.LayeredUpdates()
     
     Player.containers = (updatable, drawable)
     Player.shots_group = shots
@@ -128,6 +142,8 @@ def create_and_assign_groups():
     AsteroidField.containers = (updatable, menu_updatable)
     AsteroidField.asteroids_group = asteroids
     Asteroid.containers = (asteroids, updatable, drawable, menu_updatable, menu_drawable)
+    Menu.containers = (menu_drawable)
+    GameUI.containers = (drawable)
 
     return ObjectGroups(updatable, drawable, asteroids, shots, menu_updatable, menu_drawable)
 

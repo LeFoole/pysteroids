@@ -1,15 +1,19 @@
 from enum import Enum
 
+from objectgroups import ObjectGroups
+
 
 class GAME_STATE(Enum):
-    MENU = 1
-    PLAYING = 2
-    OVER = 3
+    PRE_MENU = 1
+    MENU = 2
+    PLAYING = 3
+    OVER = 4
 
-class GameStateManager():
+class GameManager():
     ''
     
     GAME_STATE = GAME_STATE.MENU
+    GAME_SCORE: int = 0
 
     def update_game_state(new_state):
-        GameStateManager.GAME_STATE = new_state
+        GameManager.GAME_STATE = new_state

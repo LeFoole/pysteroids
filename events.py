@@ -1,5 +1,7 @@
 import pygame
 
 
+EVENT_OPEN_MENU = pygame.USEREVENT + 4
 GAME_START_EVENT = pygame.USEREVENT + 1
 GAME_OVER_EVENT = pygame.USEREVENT + 2
+SCORING_EVENT = pygame.USEREVENT + 3

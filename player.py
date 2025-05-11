@@ -1,7 +1,7 @@
 import pygame
 
 from constants import *
-from gamestatemanager import GameStateManager, GAME_STATE
+from gamestatemanager import GameManager, GAME_STATE
 import circleshape
 import shot
 
@@ -36,7 +36,7 @@ class Player(circleshape.CircleShape):
 
 
     def process_input(self, dt, pressed_keys):
-        if GameStateManager.GAME_STATE != GAME_STATE.PLAYING:
+        if GameManager.GAME_STATE != GAME_STATE.PLAYING:
             return
         
         self.process_movement_input(dt, pressed_keys)
